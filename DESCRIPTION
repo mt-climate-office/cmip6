@@ -12,16 +12,15 @@ Description: The goal of cmip6 is to provide a straightforward way to download
     Service) or the official NASA NEX-GDDP-CMIP6 AWS archive for global data.
 License: MIT + file LICENSE
 Imports: 
-    checkmate,
+    httr2,
     curl,
     dplyr,
-    httr2,
-    multidplyr,
     sf,
     utils
 Encoding: UTF-8
 LazyData: true
 Suggests: 
+    covr,
     spelling,
     terra,
     testthat (>= 3.0.0),

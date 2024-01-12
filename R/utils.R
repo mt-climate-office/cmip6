@@ -8,7 +8,9 @@ utils::globalVariables(
     "rast",
     "run",
     "scenario",
-    "year"
+    "year",
+    "request",
+    "response"
   )
 )
 
@@ -26,34 +28,3 @@ st_rotate <- function(x) {
 
   return(x)
 }
-
-#' Download a file using httr2
-#'
-#' @param url A URL to download.
-#' @param out.path A path to which to write the downloaded file.
-#' @param force Whether to overwrite the file if it exists.
-#'
-#' @return The path of the downloaded file.
-download_file <-
-  function(
-      url,
-      out.path,
-      force) {
-    if (!force && file.exists(out.path)) {
-      return(out.path)
-    }
-
-    httr2::request(url) |>
-      httr2::req_options(
-        timeout =
-          max(
-            300,
-            curl::curl_options()["timeout"]
-          )
-      ) |>
-      httr2::req_perform(
-        path = out.path,
-        verbosity = 0
-      )
-    return(out.path)
-  }

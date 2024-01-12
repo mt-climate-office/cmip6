@@ -20,7 +20,9 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/mt-climate-office/cmip6/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mt-climate-office/cmip6?branch=main)
 <!-- badges: end -->
 
-The goal of cmip6 is to provide a straightforward way to download the NASA NEX-GDDP-CMIP6 downscaled climate projection data, either globally or by specifying an area of interest (aoi). Data are downloaded either from the NCCS THREDDS Data Catalog if an aoi is specified (using the NetCDF Subset Service) or the official NASA NEX-GDDP-CMIP6 AWS archive for global data.
+The goal of cmip6 is to provide a straightforward way to download the [NASA NEX-GDDP-CMIP6 downscaled climate projection data](https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6), either globally or by specifying an area of interest (aoi). Data are downloaded either from the [NCCS THREDDS Data Catalog](https://ds.nccs.nasa.gov/thredds/catalog/AMES/NEX/GDDP-CMIP6/catalog.html) if an aoi is specified (using the NetCDF Subset Service) or the official [NASA NEX-GDDP-CMIP6 AWS archive](https://nex-gddp-cmip6.s3.us-west-2.amazonaws.com/index.html) for global data.
+
+**This package purposefully doesn't do anything fancy.** It doesn't load the downloaded CMIP6 data into R for you. It doesn't mask the downloaded data to your aoi. It doesn't compress the data or otherwise change whatever is downloaded. It aims to be a lightweight and convenient way to download the NASA NEX-GDDP-CMIP6 via R.
 
 ## Installation
 

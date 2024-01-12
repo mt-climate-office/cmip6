@@ -27,11 +27,12 @@
 #' @param workers Parallelization is supported by default with 10 workers.
 #' Specify an integer value of more or fewer workers if desired. Note that
 #' specifying too many workers may cause download requests to be rejected
-#' by the NASA NEX-GDDP-CMIP6 host servers.
+#' by the NASA NEX-GDDP-CMIP6 host servers. We recommend 10 or fewer workers.
 #' @param force Whether to re-download data that already exists on disk.
 #' Defaults to `FALSE`.
 #'
-#' @return A [`tibble::tbl_df`] listing the downloaded data.
+#' @return A [`tibble::tbl_df`] listing the downloaded data and their source
+#' urls.
 #' @export
 #'
 #' @examples
@@ -43,13 +44,17 @@
 #'   years = 2050
 #' )
 #'
-#' nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"))
+#' aoi <-
+#'   sf::st_read(
+#'     system.file("shape/nc.shp", package = "sf"),
+#'     quiet = TRUE
+#'   )
 #' cmip6_dl(
 #'   outdir = tempfile(),
-#'   aoi = nc,
+#'   aoi = aoi,
 #'   models = "GISS-E2-1-G",
-#'   scenarios = "ssp585",
-#'   elements = "tas",
+#'   scenarios = c("ssp126", "ssp585"),
+#'   elements = c("tas", "pr"),
 #'   years = 2050
 #' )
 cmip6_dl <-
@@ -64,9 +69,33 @@ cmip6_dl <-
            force = FALSE) {
     # Create the output directory, recursively if necessary
     dir.create(outdir,
-      recursive = TRUE,
-      showWarnings = FALSE
+               recursive = TRUE,
+               showWarnings = FALSE
     )
+
+    if(!is.null(aoi)){
+      # This is a bit convoluted, but handles sf, sfc, and bbox objects
+      if(inherits(aoi, "bbox"))
+        aoi <- sf::st_as_sfc(aoi)
+
+      if(inherits(aoi, "sfc"))
+        aoi <- sf::st_sf(aoi)
+
+      aoi <-
+        aoi |>
+        sf::st_transform(4326) |>
+        st_rotate() |>
+        sf::st_bbox() |>
+        as.list()
+
+      message(
+        "FYI: Your AOI bounding box in CMIP6 coordinates is\n",
+        "  West: ", round(aoi$xmin, 3), "\u00B0\n",
+        "  East: ", round(aoi$xmax, 3), "\u00B0\n",
+        "  South: ", round(aoi$ymin, 3), "\u00B0\n",
+        "  North: ", round(aoi$ymax, 3), "\u00B0\n"
+      )
+    }
 
     plan <-
       cmip6_ls(latest = latest) |>
@@ -75,29 +104,103 @@ cmip6_dl <-
         if (!is.null(scenarios)) (scenario %in% scenarios) else (1 == 1),
         if (!is.null(elements)) (element %in% elements) else (1 == 1),
         if (!is.null(years)) (year %in% years) else (1 == 1)
-      )
-
-    if(nrow(plan) == 0)
-      stop("No CMIP6 data to be downloaded: filters are mutually exclusive!")
-
-    if (is.null(aoi)) {
-      return(
-        cmip6_dl_aws(
-          plan = plan,
-          outdir = outdir,
-          workers = workers,
-          force = force
+      ) |>
+      dplyr::mutate(
+        file =
+          file.path(
+            outdir,
+            dataset
+          )
+      ) |>
+      {\(.) if(nrow(.) == 0)
+        stop("No CMIP6 data to be downloaded: filters are mutually exclusive!",
+             call. = FALSE)
+        else . }() |>
+      dplyr::rowwise() |>
+      {\(.) if(is.null(aoi))
+        dplyr::mutate(
+          .,
+          request =
+            list(
+              file.path(
+                "https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com",
+                path
+              ) |>
+                httr2::request()
+            )
         )
-      )
-    }
-
-    return(
-      cmip6_dl_tds(
-        aoi = aoi,
-        plan = plan,
-        outdir = outdir,
-        workers = workers,
-        force = force
-      )
-    )
+        else
+          dplyr::mutate(
+            .,
+            request =
+              list(
+                file.path(
+                  "https://ds.nccs.nasa.gov/thredds/ncss/grid/AMES",
+                  sub(
+                    pattern = "NEX-GDDP-CMIP6",
+                    replacement = "NEX/GDDP-CMIP6",
+                    x = path
+                  )
+                ) |>
+                  httr2::request() |>
+                  httr2::req_url_query(
+                    var = element,
+                    north = aoi$ymax,
+                    west = aoi$xmin,
+                    east = aoi$xmax,
+                    south = aoi$ymin,
+                    disableProjSubset = "on",
+                    horizStride = 1,
+                    time_start = paste0(year, "-01-01"),
+                    time_end = paste0(as.integer(year) + 1, "-01-01"),
+                    timeStride = 1,
+                    addLatLon = TRUE
+                  )
+              )
+          )
+      }() |>
+      dplyr::mutate(
+        request =
+          list(
+            httr2::req_options(
+              request,
+              timeout =
+                max(
+                  300,
+                  curl::curl_options()["timeout"]
+                )
+            )
+          )) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(
+        response = list(NULL),
+        response = ifelse(force | !file.exists(file),
+                          httr2::req_perform_parallel(
+                            reqs = request[force | !file.exists(file)],
+                            paths = file[force | !file.exists(file)],
+                            on_error = "continue",
+                            pool = curl::new_pool(host_con = workers)
+                          ),
+                          response),
+        url = vapply(
+          X = request,
+          FUN = \(x){x$url},
+          FUN.VALUE = "a"
+        ),
+        status =
+          dplyr::case_when(
+            vapply(
+              X = response,
+              FUN = is.null,
+              FUN.VALUE = TRUE
+            ) ~ "cached",
+            vapply(
+              X = response,
+              FUN = inherits,
+              FUN.VALUE = TRUE,
+              what = "httr2_error") ~ "unavailable",
+            .default = "downloaded"
+          )
+      ) |>
+      dplyr::select(!c(request, response, path))
   }

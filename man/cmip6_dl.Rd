@@ -42,13 +42,14 @@ new ones exist. Defaults to TRUE.}
 \item{workers}{Parallelization is supported by default with 10 workers.
 Specify an integer value of more or fewer workers if desired. Note that
 specifying too many workers may cause download requests to be rejected
-by the NASA NEX-GDDP-CMIP6 host servers.}
+by the NASA NEX-GDDP-CMIP6 host servers. We recommend 10 or fewer workers.}
 
 \item{force}{Whether to re-download data that already exists on disk.
 Defaults to \code{FALSE}.}
 }
 \value{
-A \code{\link[tibble:tbl_df-class]{tibble::tbl_df}} listing the downloaded data.
+A \code{\link[tibble:tbl_df-class]{tibble::tbl_df}} listing the downloaded data and their source
+urls.
 }
 \description{
 Data are downloaded either from the NCCS THREDDS Data Catalog (using the
@@ -70,13 +71,17 @@ cmip6_dl(
   years = 2050
 )
 
-nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"))
+aoi <-
+  sf::st_read(
+    system.file("shape/nc.shp", package = "sf"),
+    quiet = TRUE
+  )
 cmip6_dl(
   outdir = tempfile(),
-  aoi = nc,
+  aoi = aoi,
   models = "GISS-E2-1-G",
-  scenarios = "ssp585",
-  elements = "tas",
+  scenarios = c("ssp126", "ssp585"),
+  elements = c("tas", "pr"),
   years = 2050
 )
 }
