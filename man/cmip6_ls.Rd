@@ -2,19 +2,34 @@
 % Please edit documentation in R/cmip6_ls.R
 \name{cmip6_ls}
 \alias{cmip6_ls}
+\alias{cmip6_ls_models}
+\alias{cmip6_ls_scenarios}
+\alias{cmip6_ls_elements}
 \title{List the available NASA NEX-GDDP-CMIP6 data}
+\source{
+\url{https://nex-gddp-cmip6.s3.us-west-2.amazonaws.com/index.html}
+}
 \usage{
 cmip6_ls(latest = TRUE)
+
+cmip6_ls_models()
+
+cmip6_ls_scenarios()
+
+cmip6_ls_elements()
 }
 \arguments{
 \item{latest}{Whether to remove legacy versions of the data where
-new ones exist. Defaults to TRUE.}
+new data exist. Defaults to TRUE.}
 }
 \value{
 A \code{\link[tibble:tbl_df-class]{tibble::tbl_df}} listing the available data.
 }
 \description{
-List the available NASA NEX-GDDP-CMIP6 data
+\code{cmip6_ls()} lists all data, removing legacy versions of the data by default.
+\code{cmip6_ls_models()} lists the available models. \code{cmip6_ls_scenarios()} lists
+the available scenarios (shared socioeconomic pathways, and the historical
+runs). \code{cmip6_ls_elements()} lists the available elements.
 }
 \examples{
 cmip6_ls()

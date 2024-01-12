@@ -2,10 +2,10 @@
 % Please edit documentation in R/cmip6_dl.R
 \name{cmip6_dl}
 \alias{cmip6_dl}
-\title{Title}
+\title{Download NASA NEX-GDDP-CMIP6 Data}
 \usage{
 cmip6_dl(
-  outdir,
+  outdir = getwd(),
   aoi = NULL,
   models = NULL,
   scenarios = NULL,
@@ -17,8 +17,66 @@ cmip6_dl(
 )
 }
 \arguments{
-\item{force}{}
+\item{outdir}{The directory to which to write the downloaded data. Defaults
+to the current working directory.}
+
+\item{aoi}{Optional. An \code{\link{sf}} object specifying an area of interest.
+If omitted, data for the entire globe are downloaded.}
+
+\item{models}{Optional. A character vector of models to download. If
+omitted, all models are downloaded.}
+
+\item{scenarios}{Optional. A character vector of scenarios (shared
+socioeconomic pathways) to download. If omitted, all scenarios are
+downloaded.}
+
+\item{elements}{Optional. A character vector of elements (meteorological
+variables) to download. If omitted, all elements are downloaded.}
+
+\item{years}{Optional. An integer vector of years to download. If omitted,
+all years are downloaded. Data area available from 1950--2100.}
+
+\item{latest}{Whether to remove legacy versions of the data where
+new ones exist. Defaults to TRUE.}
+
+\item{workers}{Parallelization is supported by default with 10 workers.
+Specify an integer value of more or fewer workers if desired. Note that
+specifying too many workers may cause download requests to be rejected
+by the NASA NEX-GDDP-CMIP6 host servers.}
+
+\item{force}{Whether to re-download data that already exists on disk.
+Defaults to \code{FALSE}.}
+}
+\value{
+A \code{\link[tibble:tbl_df-class]{tibble::tbl_df}} listing the downloaded data.
 }
 \description{
-Title
+Data are downloaded either from the NCCS THREDDS Data Catalog (using the
+NetCDF Subset Service) or the official NASA NEX-GDDP-CMIP6 AWS archive. This
+function chooses which service to download from based on whether the user
+specifies an area of interest (\code{aoi}).
+}
+\details{
+Specify an \code{aoi} as an \code{\link{sf}} object to crop data to a
+specific bounding box. Downloaded data are \emph{not} masked to the \code{sf} object,
+merely constrained to its bounding box.
+}
+\examples{
+cmip6_dl(
+  outdir = tempfile(),
+  models = "GISS-E2-1-G",
+  scenarios = "ssp585",
+  elements = "tas",
+  years = 2050
+)
+
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"))
+cmip6_dl(
+  outdir = tempfile(),
+  aoi = nc,
+  models = "GISS-E2-1-G",
+  scenarios = "ssp585",
+  elements = "tas",
+  years = 2050
+)
 }

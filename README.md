@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# cmip6
+# cmip6: Straightforward NASA NEX-GDDP-CMIP6 spatial subsets and downloads in R
 
 <!-- badges: start -->
 
@@ -10,7 +10,12 @@
 coverage](https://codecov.io/gh/mt-climate-office/cmip6/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mt-climate-office/cmip6?branch=main)
 <!-- badges: end -->
 
-The goal of cmip6 is to …
+The goal of cmip6 is to provide a straightforward way to download the
+NASA NEX-GDDP-CMIP6 downscaled climate projection data, either globally
+or by specifying an area of interest (aoi). Data are downloaded either
+from the NCCS THREDDS Data Catalog if an aoi is specified (using the
+NetCDF Subset Service) or the official NASA NEX-GDDP-CMIP6 AWS archive
+for global data.
 
 ## Installation
 
@@ -18,39 +23,29 @@ You can install the development version of cmip6 from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("mt-climate-office/cmip6")
+# install.packages("pak")
+pak::pkg_install("mt-climate-office/cmip6")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
 ``` r
 library(cmip6)
-## basic example code
+
+nc <- 
+  sf::st_read(
+    dsn = system.file("shape/nc.shp", package = "sf"),
+    quiet = TRUE
+  )
+
+outdir <- tempfile()
+
+cmip6_dl(
+  outdir = outdir,
+  aoi = nc,
+  models = "GISS-E2-1-G",
+  scenarios = c("ssp126", "ssp585"),
+  elements = c("tas", "pr"),
+  years = 2050:2055
+)
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
