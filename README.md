@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/mt-climate-office/cmip6/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mt-climate-office/cmip6/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/mt-climate-office/cmip6/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mt-climate-office/cmip6?branch=main)
 <!-- badges: end -->
 
 The goal of cmip6 is to provide a straightforward way to download the

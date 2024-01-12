@@ -5,11 +5,11 @@ Version: 0.1.0
 Authors@R: 
     person("Kyle", "Bocinsky", , "bocinsky@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1862-3428"))
-Description: The goal of cmip6 is to provide a straightforward way to download 
-the NASA NEX-GDDP-CMIP6 downscaled climate projection data, either globally 
-or by specifying an area of interest (aoi). Data are downloaded either from 
-the NCCS THREDDS Data Catalog if an aoi is specified (using the NetCDF Subset 
-Service) or the official NASA NEX-GDDP-CMIP6 AWS archive for global data.
+Description: The goal of cmip6 is to provide a straightforward way to download
+    the NASA NEX-GDDP-CMIP6 downscaled climate projection data, either globally 
+    or by specifying an area of interest (aoi). Data are downloaded either from 
+    the NCCS THREDDS Data Catalog if an aoi is specified (using the NetCDF Subset 
+    Service) or the official NASA NEX-GDDP-CMIP6 AWS archive for global data.
 License: MIT + file LICENSE
 Imports: 
     checkmate,
