@@ -178,7 +178,7 @@ cmip6_dl <-
                           httr2::req_perform_parallel(
                             reqs = request[force | !file.exists(file)],
                             paths = file[force | !file.exists(file)],
-                            on_error = "continue",
+                            on_error = "stop",
                             pool = curl::new_pool(host_con = workers)
                           ),
                           response),
