@@ -166,7 +166,7 @@ cmip6_dl <-
               request,
               timeout =
                 max(
-                  300,
+                  500,
                   curl::curl_options()["timeout"]
                 )
             )
