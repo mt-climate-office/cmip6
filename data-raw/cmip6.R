@@ -1,13 +1,14 @@
 ## code to prepare `cmip6_ls` dataset goes here
 cmip6 <-
-  rbind(
+  list(
+    read.table("https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com/index_v1.2_md5.txt",
+               col.names = c("md5", "fileURL")),
     read.table("https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com/index_v1.1_md5.txt",
-      col.names = c("md5", "fileURL")
-    ),
+               col.names = c("md5", "fileURL")),
     read.table("https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com/index_md5.txt",
-      col.names = c("md5", "fileURL")
-    )
+               col.names = c("md5", "fileURL"))
   ) |>
+  dplyr::bind_rows() |>
   dplyr::mutate(dataset = tools::file_path_sans_ext(basename(fileURL))) |>
   tidyr::separate_wider_delim(dataset,
     names = c("element", "timestep", "model", "scenario", "run", "type", "year", "version"),

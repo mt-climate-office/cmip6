@@ -1,7 +1,7 @@
 Type: Package
 Package: cmip6
 Title: Straightforward NASA NEX-GDDP-CMIP6 Spatial Subsets and Downloads in R
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: 
     person("Kyle", "Bocinsky", , "bocinsky@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1862-3428"))
@@ -26,7 +26,7 @@ Suggests:
     testthat (>= 3.0.0),
     tidyr
 Config/testthat/edition: 3
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 4.1)

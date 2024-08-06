@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![GitHub
+Release](https://img.shields.io/github/v/release/mt-climate-office/cmip6)](https://github.com/mt-climate-office/cmip6/releases/latest)
 [![R-CMD-check](https://github.com/mt-climate-office/cmip6/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mt-climate-office/cmip6/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/mt-climate-office/cmip6/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mt-climate-office/cmip6?branch=main)
@@ -25,15 +27,21 @@ for global data.
 the downloaded CMIP6 data into R for you. It doesn’t mask the downloaded
 data to your aoi. It doesn’t compress the data or otherwise change
 whatever is downloaded. It aims to be a lightweight and convenient way
-to download the NASA NEX-GDDP-CMIP6 via R.
+to download the NASA NEX-GDDP-CMIP6 data via R.
 
 ## Installation
 
-You can install the development version of cmip6 from
+You can install the latest release of cmip6 from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
+pak::pkg_install("mt-climate-office/cmip6@*release")
+```
+
+Or, install the development version with:
+
+``` r
 pak::pkg_install("mt-climate-office/cmip6")
 ```
 
@@ -42,17 +50,10 @@ pak::pkg_install("mt-climate-office/cmip6")
 ``` r
 library(cmip6)
 
-nc <- 
-  sf::st_read(
-    dsn = system.file("shape/nc.shp", package = "sf"),
-    quiet = TRUE
-  )
-
-outdir <- tempfile()
-
 cmip6_dl(
-  outdir = outdir,
-  aoi = nc,
+  outdir = tempfile(),
+  aoi = sf::st_read(dsn = system.file("shape/nc.shp", package = "sf"),
+                    quiet = TRUE),
   models = "GISS-E2-1-G",
   scenarios = c("ssp126", "ssp585"),
   elements = c("tas", "pr"),
