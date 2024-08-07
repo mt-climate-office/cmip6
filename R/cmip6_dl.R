@@ -154,7 +154,8 @@ cmip6_dl <-
                     time_start = paste0(year, "-01-01"),
                     time_end = paste0(as.integer(year) + 1, "-01-01"),
                     timeStride = 1,
-                    addLatLon = TRUE
+                    # addLatLon = TRUE,
+                    accept = "netcdf4-classic"
                   )
               )
           )
