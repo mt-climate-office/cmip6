@@ -20,7 +20,7 @@ cmip6_dl(
 \item{outdir}{The directory to which to write the downloaded data. Defaults
 to the current working directory.}
 
-\item{aoi}{Optional. An \code{\link{sf}} object specifying an area of interest.
+\item{aoi}{Optional. An \code{\link[sf:sf]{sf::sf}} object specifying an area of interest.
 If omitted, data for the entire globe are downloaded.}
 
 \item{models}{Optional. A character vector of models to download. If
@@ -58,7 +58,7 @@ function chooses which service to download from based on whether the user
 specifies an area of interest (\code{aoi}).
 }
 \details{
-Specify an \code{aoi} as an \code{\link{sf}} object to crop data to a
+Specify an \code{aoi} as an \code{\link[sf:sf]{sf::sf}} object to crop data to a
 specific bounding box. Downloaded data are \emph{not} masked to the \code{sf} object,
 merely constrained to its bounding box.
 }

@@ -180,7 +180,7 @@ cmip6_dl <-
                             reqs = request[force | !file.exists(file)],
                             paths = file[force | !file.exists(file)],
                             on_error = "continue",
-                            pool = curl::new_pool(host_con = workers)
+                            max_active = workers
                           ),
                           response),
         url = vapply(

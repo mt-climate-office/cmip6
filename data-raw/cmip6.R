@@ -1,6 +1,8 @@
 ## code to prepare `cmip6_ls` dataset goes here
 cmip6 <-
   list(
+    read.table("https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com/index_v2.0_md5.txt",
+               col.names = c("md5", "fileURL")),
     read.table("https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com/index_v1.2_md5.txt",
                col.names = c("md5", "fileURL")),
     read.table("https://nex-gddp-cmip6.s3-us-west-2.amazonaws.com/index_v1.1_md5.txt",
